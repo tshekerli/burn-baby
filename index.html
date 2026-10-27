@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Burn Circuit 70</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one sticky player on top, scrollable step list below; built for one thumb on a phone */
+:root{
+  --bg:#f3f1ec; --fg:#17191c; --mute:#6b6f76; --panel:#ffffff; --line:#dcd8cf;
+  --accent:#d9480f; --accent-fg:#ffffff; --work:#d9480f; --rest:#2b7a78; --stretch:#5b4bb5; --warm:#b8860b;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#121315; --fg:#f0eee9; --mute:#9a9ea6; --panel:#1c1e22; --line:#2d3036;
+  --accent:#ff6a2b; --accent-fg:#16110d; --work:#ff6a2b; --rest:#4fc3bf; --stretch:#9d8cff; --warm:#e0b24a; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#121315; --fg:#f0eee9; --mute:#9a9ea6; --panel:#1c1e22; --line:#2d3036;
+  --accent:#ff6a2b; --accent-fg:#16110d; --work:#ff6a2b; --rest:#4fc3bf; --stretch:#9d8cff; --warm:#e0b24a; color-scheme:dark }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
+h1{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:.01em;margin:4px 0 2px;text-transform:uppercase;text-wrap:balance}
+.sub{color:var(--mute);font-size:.95rem;margin:0 0 14px}
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.phase{display:flex;align-items:center;gap:8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mute);font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.name{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.05;margin:6px 0 2px;text-wrap:balance}
+.cue{color:var(--mute);font-size:.92rem;min-height:1.3em}
+.time{font-family:var(--display);font-weight:800;font-size:5.2rem;line-height:1;font-variant-numeric:tabular-nums;margin:8px 0 6px;letter-spacing:.02em}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s linear}
+.ctrl{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px;margin-top:14px}
+button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:14px 10px;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-family:var(--display);font-size:1.4rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.next{margin-top:10px;font-size:.88rem;color:var(--mute)}
+.next b{color:var(--fg);font-weight:600}
+.meta{display:flex;justify-content:space-between;margin:14px 2px 6px;font-size:.85rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.sect{margin-top:22px}
+.sect h2{font-family:var(--display);font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 2px;display:flex;justify-content:space-between;align-items:baseline}
+.sect h2 span{font-family:var(--body);font-weight:500;font-size:.85rem;color:var(--mute);letter-spacing:0;text-transform:none}
+.sect p{margin:0 0 8px;color:var(--mute);font-size:.9rem}
+.list{display:flex;flex-direction:column;gap:6px}
+.step{display:grid;grid-template-columns:4px 1fr auto;gap:12px;align-items:center;padding:10px 12px 10px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;cursor:pointer;min-width:0}
+.step .rail{height:100%;border-radius:0 2px 2px 0;background:var(--work)}
+.step[data-kind=rest] .rail{background:var(--rest)}
+.step[data-kind=stretch] .rail{background:var(--stretch)}
+.step[data-kind=warm] .rail{background:var(--warm)}
+.step .t{font-weight:600;min-width:0}
+.step .c{display:block;font-size:.82rem;color:var(--mute);font-weight:400}
+.step .d{font-variant-numeric:tabular-nums;color:var(--mute);font-size:.9rem;white-space:nowrap}
+.step.done{opacity:.5}
+.step.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.rounds{font-size:.8rem;color:var(--mute);margin-top:6px}
+.how{margin:8px 0 0;font-size:.9rem}
+.how ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:2px}
+.how a{color:var(--accent);font-weight:600;text-decoration:none;display:inline-block;margin-top:6px}
+.step{grid-template-columns:4px 1fr auto;grid-template-areas:"r t d" "r h h"}
+.step .rail{grid-area:r}.step .t{grid-area:t}.step .d{grid-area:d}
+.step .h{grid-area:h;display:none;font-size:.86rem;color:var(--mute);padding-right:12px}
+.step .h ol{margin:4px 0 0;padding-left:18px}
+.step .h a{color:var(--accent);font-weight:600;text-decoration:none;display:inline-block;margin-top:4px}
+.step.open .h{display:block}
+.step .d small{display:block;color:var(--accent);font-weight:600;font-size:.78rem}
+.vid{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;margin:8px 0;cursor:pointer}
+.vid img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.vid i{position:absolute;left:50%;top:50%;width:56px;height:40px;margin:-20px 0 0 -28px;background:var(--accent);border-radius:10px}
+.vid i::after{content:"";position:absolute;left:22px;top:11px;border-left:16px solid var(--accent-fg);border-top:9px solid transparent;border-bottom:9px solid transparent}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player .vid{max-width:360px;margin-left:auto;margin-right:auto}
+.note{margin-top:26px;padding:12px 14px;border-left:3px solid var(--accent);color:var(--mute);font-size:.9rem}
+@media (max-width:420px){.time{font-size:4.4rem}.name{font-size:1.7rem}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Burn Circuit 70</h1>
+  <p class="sub">Full body, high heart rate, core work last, long stretch at the end. No equipment needed. Tap an exercise to read how to do it, tap its time to jump there.</p>
+
+  <section class="player" aria-live="polite">
+    <div class="phase"><i class="dot" id="dot"></i><span id="phase">Ready</span></div>
+    <div class="name" id="name">Warm-up starts with jumping jacks</div>
+    <div class="cue" id="cue">Press start when you're on the mat.</div>
+    <div class="how" id="how"></div>
+    <div class="time" id="time">0:00</div>
+    <div class="bar"><i id="fill"></i></div>
+    <div class="ctrl">
+      <button id="prev" aria-label="Previous step">Back</button>
+      <button id="go" class="go">Start</button>
+      <button id="skip" aria-label="Next step">Skip</button>
+    </div>
+    <div class="next" id="next"></div>
+  </section>
+
+  <div class="meta"><span id="progress">0 of 0 steps</span><span id="total"></span></div>
+  <div id="sections"></div>
+
+  <p class="note">Belly fat goes when total body fat goes. This session burns a lot, but the deficit is set in the kitchen. Three or four of these a week plus a modest calorie cut is what actually moves the belt notch.</p>
+</div>
+
+<script>
+const HOW = {
+  "Jumping jacks":["Stand feet together, arms at sides.","Jump feet wide while swinging arms overhead.","Jump back. Keep it bouncy, land on the balls of the feet."],
+  "Arm circles":["Arms straight out to the sides at shoulder height.","Small circles forward, growing bigger over 15s.","Reverse direction for the second 15s."],
+  "Hip circles":["Feet shoulder width, hands on hips.","Push hips in a big circle: left, front, right, back.","Switch direction halfway."],
+  "Leg swings, left":["Hold a wall or chair with your right hand.","Swing the left leg forward and back, straight, relaxed.","Go a little higher each swing."],
+  "Leg swings, right":["Hold the wall with your left hand.","Swing the right leg forward and back.","Keep the torso still."],
+  "Inchworms":["Stand, bend down, hands on the floor.","Walk hands forward until you're in a plank.","Walk feet toward hands with straight legs, stand up, repeat."],
+  "Bodyweight squats":["Feet shoulder width, toes slightly out.","Sit hips back and down until thighs are parallel, heels flat.","Drive up through the heels."],
+  "High knees":["Run in place.","Drive each knee up to hip height.","Pump the arms, stay on the balls of the feet."],
+  "World's greatest stretch":["Step into a long lunge, right foot forward, left hand on the floor.","Drop the right elbow toward the right instep.","Rotate and reach the right arm to the ceiling. 30s, then switch sides."],
+  "Burpees":["From standing, squat and put hands on the floor.","Jump feet back to a plank, lower chest to the floor.","Push up, jump feet in, jump straight up with arms overhead."],
+  "Mountain climbers":["Start in a plank, hands under shoulders.","Drive the right knee toward the chest, then switch legs fast.","Hips stay level, don't let them rise."],
+  "Squat jumps":["Squat to parallel.","Explode up, arms swing overhead.","Land soft, straight back into the next squat."],
+  "Push-ups":["Plank, hands slightly wider than shoulders.","Lower chest to just above the floor, elbows at 45 degrees from the body.","Press back up. Body stays in one straight line."],
+  "Reverse lunges":["Stand tall.","Step one foot back, drop the back knee to just above the floor.","Push through the front heel to stand. Alternate legs."],
+  "Plank shoulder taps":["High plank, feet a bit wider than usual.","Lift the right hand and tap the left shoulder.","Put it down, switch. Hips don't rotate."],
+  "Skaters":["Stand on the right leg.","Jump sideways to the left, land on the left foot, right foot sweeps behind.","Touch the floor with the right hand if you can, jump back."],
+  "Bicycle crunches":["Lie on your back, hands lightly behind the head, legs lifted.","Bring the right elbow to the left knee while extending the right leg.","Switch sides slowly. Lower back stays on the floor."],
+  "Hip-hinge swings":["Feet wide, hold a weight or clasp hands.","Push hips back, chest forward, weight swings between the legs.","Snap the hips forward to stand, arms float to chest height. Hips do the work, not arms."],
+  "Jump rope or high knees":["Rope: small quick hops, wrists turn the rope.","No rope: fast high knees.","Stay light, breathe steady."],
+  "Russian twists":["Sit, knees bent, lean back to 45 degrees, feet lifted if you can.","Rotate the torso to tap the floor beside the right hip.","Rotate to the left. Turn the chest, not just the hands."],
+  "Bear crawl":["Hands and feet on the floor, knees one inch off the ground.","Crawl forward 4 steps: right hand with left foot, left hand with right foot.","Crawl back 4 steps. Back stays flat."],
+  "Plank":["Forearms on the floor, elbows under shoulders.","Body straight from head to heels.","Squeeze glutes and push the floor away."],
+  "Side plank, left":["Lie on the left side, left forearm on the floor, elbow under shoulder.","Lift hips so the body is a straight line.","Top arm up or on hip. Hold."],
+  "Side plank, right":["Same on the right side.","Hips high, don't sag.","Breathe."],
+  "Dead bugs":["Lie on your back, arms straight up, knees bent at 90 over hips.","Lower the right arm overhead and the left leg toward the floor at the same time.","Return and switch. Lower back pressed into the floor the whole time."],
+  "Leg raises":["Lie on your back, hands under the hips, legs straight.","Lift both legs to vertical.","Lower slowly until just above the floor. Don't arch the back."],
+  "Hollow hold":["Lie on your back, arms overhead.","Lift shoulders and legs off the floor, lower back pressed down.","Hold. Bend the knees if the back lifts."],
+  "Flutter kicks":["Lie on your back, hands under hips, legs lifted slightly.","Small fast alternating kicks.","Chin tucked, back flat."],
+  "Downward dog":["Hands and feet on the floor, hips pushed up and back into an upside-down V.","Pedal the heels for the first 20s.","Then hold, heels pressing toward the floor."],
+  "Cobra":["Lie face down, hands under shoulders.","Press the chest up, hips stay on the floor, elbows slightly bent.","Look forward, breathe."],
+  "Child's pose":["Kneel, knees wide, big toes together.","Sit back onto the heels, arms stretched forward.","Forehead on the floor."],
+  "Cat-cow":["Hands and knees.","Inhale: drop the belly, lift the head (cow).","Exhale: round the spine, tuck the chin (cat). Slow."],
+  "Hip flexor lunge, left":["Kneel on the left knee, right foot forward.","Tuck the pelvis under and shift forward until you feel the front of the left hip.","Reach the left arm up."],
+  "Hip flexor lunge, right":["Kneel on the right knee, left foot forward.","Tuck the pelvis, shift forward.","Right arm up."],
+  "Pigeon, left":["From hands and knees, bring the left shin forward across the floor.","Extend the right leg straight behind.","Fold the chest over the left leg."],
+  "Pigeon, right":["Right shin forward.","Left leg straight behind.","Fold forward."],
+  "Seated hamstring fold":["Sit, legs straight together.","Hinge from the hips, chest toward the thighs.","Reach for the feet, don't round the upper back to cheat."],
+  "Seated twist, left":["Sit, legs out, cross the right foot over the left knee.","Left elbow outside the right knee, right hand behind you.","Twist to the right, look over the shoulder."],
+  "Seated twist, right":["Cross the left foot over the right knee.","Right elbow outside the left knee.","Twist left."],
+  "Figure-four glute stretch":["Lie on your back, cross the right ankle over the left knee.","Pull the left thigh toward the chest.","30s, then switch."],
+  "Chest and shoulder stretch":["Stand in a doorway, forearms on the frame, step forward.","Or clasp hands behind the back, lift and open the chest.","Hold, breathe deep."],
+};
+const VID = {"Jumping jacks":"uLVt6u15L98","Arm circles":"hne3nHGXPRM","Hip circles":"qkrJXGVj_OQ","Leg swings":"UN9j_8l3keM","Inchworms":"ml3MdmCkwbQ","Bodyweight squats":"ZLJBfYF_oO0","High knees":"D0GwAezTvtg","World's greatest stretch":"-CiWQ2IvY34","Burpees":"wGvBfVeCNko","Mountain climbers":"hq_0YlyfqGM","Squat jumps":"8Sl9h44XNJA","Push-ups":"WDIpL0pjun0","Reverse lunges":"xrPteyQLGAo","Plank shoulder taps":"mPIym8BigIc","Skaters":"9_jLW6VkU8A","Bicycle crunches":"1we3bh9uhqY","Hip-hinge swings":"sSESeQAir2M","Jump rope or high knees":"7GZ3uEDJqXA","Russian twists":"DF0sPfwys_g","Bear crawl":"Gb2e9edK8a4","Plank":"mwlp75MS6Rg","Side plank":"44ND4bOB-T0","Dead bugs":"bxn9FBrt4-A","Leg raises":"sY2ZgV2Sj_s","Hollow hold":"TNHSgs_orU0","Flutter kicks":"6D23AyECRGQ","Downward dog":"3qHXmRDN-ig","Cobra":"5-04VIORdwM","Child's pose":"eqVMAPM00DM","Cat-cow":"KT6Fk7FWYfM","Hip flexor lunge":"iZ1eZBY4fwM","Pigeon":"zuYbjkuKLKY","Seated hamstring fold":"_Ivm4C53zBQ","Seated twist":"ciGK6HyYqV4","Figure-four glute stretch":"VgjgTGnBkx0","Chest and shoulder stretch":"h4M4XmCBFd8"};
+const vidId = name => VID[name] || VID[name.replace(/, (left|right)$/, "")];
+function videoHTML(name) {
+  const id = vidId(name); if (!id) return "";
+  return `<div class="vid" data-id="${id}" role="button" tabindex="0" aria-label="Play video"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy"><i></i></div>`;
+}
+document.addEventListener("click", e => {
+  const v = e.target.closest(".vid"); if (!v || v.querySelector("iframe")) return;
+  e.stopPropagation();
+  v.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.dataset.id}?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="Exercise video"></iframe>`;
+}, true);
+const vid = name => `https://www.youtube.com/results?search_query=${encodeURIComponent(name.replace(/, (left|right)$/, "") + " exercise how to")}`;
+function howHTML(name) {
+  const h = HOW[name]; if (!h) return "";
+  return `${videoHTML(name)}<ol>${h.map(l => `<li>${l}</li>`).join("")}</ol><a href="${vid(name)}" target="_blank" rel="noopener">More videos</a>`;
+}
+const PLAN = [
+  { title:"Warm-up", kind:"warm", blurb:"Raise temperature, open hips and shoulders. Easy pace.", steps:[
+    ["Jumping jacks",60,"Light on the feet, full arm swing"],
+    ["Arm circles",30,"15s forward, 15s backward"],
+    ["Hip circles",30,"Hands on hips, big slow circles both ways"],
+    ["Leg swings, left",30,"Hold a wall, swing front to back"],
+    ["Leg swings, right",30,"Same, other leg"],
+    ["Inchworms",60,"Walk hands out to plank, walk feet in, stand"],
+    ["Bodyweight squats",60,"Slow down, fast up, heels flat"],
+    ["High knees",60,"Finish the warm-up with the heart rate up"],
+    ["World's greatest stretch",60,"Lunge, elbow to instep, rotate and reach. 30s each side"],
+  ]},
+  { title:"Circuit A", kind:"work", rounds:3, work:40, rest:20, roundRest:90,
+    blurb:"3 rounds. 40s work, 20s rest, 90s between rounds. Push hard on work, breathe on rest.", steps:[
+    ["Burpees","Chest to floor, jump at the top. Step back instead of jumping if form breaks"],
+    ["Mountain climbers","Hips level with shoulders, drive knees fast"],
+    ["Squat jumps","Land soft, sink into the squat, explode up"],
+    ["Push-ups","Elbows at 45 degrees, body in one line. Knees down if needed"],
+    ["Reverse lunges","Alternate legs, back knee kisses the floor"],
+    ["Plank shoulder taps","Feet wide, hips still, tap opposite shoulder"],
+  ]},
+  { title:"Circuit B", kind:"work", rounds:3, work:40, rest:20, roundRest:90,
+    blurb:"3 rounds, same timing. More rotation and lateral work this time.", steps:[
+    ["Skaters","Side to side bound, touch the floor behind the planted foot"],
+    ["Bicycle crunches","Slow and controlled, elbow to opposite knee, lower back pressed down"],
+    ["Hip-hinge swings","Kettlebell or dumbbell if you have one, otherwise hinge and snap hips with hands clasped"],
+    ["Jump rope or high knees","Real rope if available, fast feet either way"],
+    ["Russian twists","Feet off the floor if you can, rotate the ribcage not the arms"],
+    ["Bear crawl","Knees an inch off the floor, crawl forward 4 steps, back 4 steps"],
+  ]},
+  { title:"Core finisher", kind:"work", blurb:"Straight through, no rest except what's listed. Quality over speed.", steps:[
+    ["Plank",60,"Squeeze glutes, push the floor away"],
+    ["Side plank, left",30,"Hips high, top arm up"],
+    ["Side plank, right",30,"Same, other side"],
+    ["Dead bugs",60,"Opposite arm and leg, lower back glued to the floor"],
+    ["Rest",30,"Shake out",{kind:"rest"}],
+    ["Leg raises",45,"Hands under hips if needed, don't let the lower back arch"],
+    ["Hollow hold",30,"Shoulders and feet off the floor, lower back down"],
+    ["Flutter kicks",45,"Small fast kicks, chin tucked"],
+  ]},
+  { title:"Cool-down stretches", kind:"stretch", blurb:"Breathe slow through the nose. Hold, don't bounce.", steps:[
+    ["Downward dog",60,"Pedal the heels for the first 20s, then hold"],
+    ["Cobra",45,"Hips on the floor, chest open, elbows soft"],
+    ["Child's pose",60,"Knees wide, arms long, forehead down"],
+    ["Cat-cow",60,"Move with the breath, slow"],
+    ["Hip flexor lunge, left",45,"Back knee down, tuck the pelvis, reach the same-side arm up"],
+    ["Hip flexor lunge, right",45,"Same, other side"],
+    ["Pigeon, left",60,"Shin forward, fold over the front leg"],
+    ["Pigeon, right",60,"Same, other side"],
+    ["Seated hamstring fold",60,"Legs straight, hinge from the hips, reach for the feet"],
+    ["Seated twist, left",30,"One hand behind, elbow outside the knee"],
+    ["Seated twist, right",30,"Same, other side"],
+    ["Figure-four glute stretch",60,"On your back, 30s each side"],
+    ["Chest and shoulder stretch",45,"Doorway or clasp hands behind, lift and open"],
+  ]},
+];
+
+// Flatten into a linear step list
+const steps = [];
+PLAN.forEach((sec, si) => {
+  sec.index = steps.length;
+  if (sec.rounds) {
+    for (let r = 1; r <= sec.rounds; r++) {
+      sec.steps.forEach(([name, cue], i) => {
+        steps.push({ sec: si, name, cue, secs: sec.work, kind: "work", round: r });
+        const last = i === sec.steps.length - 1;
+        if (!last) steps.push({ sec: si, name: "Rest", cue: "Walk it off, breathe", secs: sec.rest, kind: "rest", round: r });
+        else if (r < sec.rounds) steps.push({ sec: si, name: "Round rest", cue: "Water. Round " + (r + 1) + " next", secs: sec.roundRest, kind: "rest", round: r });
+      });
+    }
+  } else {
+    sec.steps.forEach(([name, secs, cue, opt]) => steps.push({ sec: si, name, cue, secs, kind: (opt && opt.kind) || sec.kind }));
+  }
+  sec.count = steps.length - sec.index;
+});
+const totalSecs = steps.reduce((a, s) => a + s.secs, 0);
+
+const $ = id => document.getElementById(id);
+const fmt = s => Math.floor(s / 60) + ":" + String(Math.round(s) % 60).padStart(2, "0");
+const KEY = "burn70.pos";
+let idx = 0, left = steps[0].secs, running = false, tick = null, lastTs = 0, wake = null;
+try { const p = parseInt(localStorage.getItem(KEY)); if (p > 0 && p < steps.length) { idx = p; left = steps[idx].secs; } } catch (e) {}
+
+// Render list
+const secBox = $("sections");
+PLAN.forEach((sec, si) => {
+  const el = document.createElement("div"); el.className = "sect";
+  const dur = steps.filter(s => s.sec === si).reduce((a, s) => a + s.secs, 0);
+  el.innerHTML = `<h2>${sec.title}<span>${Math.round(dur / 60)} min</span></h2><p>${sec.blurb}</p><div class="list"></div>`;
+  const list = el.querySelector(".list");
+  if (sec.rounds) {
+    sec.steps.forEach(([name, cue], i) => {
+      const first = sec.index + i * 2;
+      list.appendChild(stepEl(name, cue, sec.work + "s", "work", first));
+    });
+    const r = document.createElement("div"); r.className = "rounds";
+    r.textContent = `${sec.rounds} rounds. Tapping a step starts it in round 1.`;
+    el.appendChild(r);
+  } else {
+    sec.steps.forEach(([name, secs, cue, opt], i) => list.appendChild(stepEl(name, cue, secs + "s", (opt && opt.kind) || sec.kind, sec.index + i)));
+  }
+  secBox.appendChild(el);
+});
+function stepEl(name, cue, d, kind, target) {
+  const s = document.createElement("div"); s.className = "step"; s.dataset.kind = kind; s.dataset.target = target;
+  s.setAttribute("role", "button"); s.tabIndex = 0;
+  const how = howHTML(name);
+  s.innerHTML = `<i class="rail"></i><div class="t">${name}<span class="c">${cue}</span></div><div class="d">${d}<small>Go</small></div>${how ? `<div class="h">${how}</div>` : ""}`;
+  const go = () => { stop(); idx = target; left = steps[idx].secs; render(); start(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  s.addEventListener("click", e => {
+    if (e.target.closest("a")) return;
+    if (e.target.closest(".d")) go(); else if (how) s.classList.toggle("open"); else go();
+  });
+  s.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); how ? s.classList.toggle("open") : go(); } });
+  return s;
+}
+$("total").textContent = "Total " + Math.round(totalSecs / 60) + " min";
+
+// Audio cues
+let ac = null;
+function beep(freq, len, when) {
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.value = freq; o.connect(g); g.connect(ac.destination);
+    const t = ac.currentTime + (when || 0);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.4, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+    o.start(t); o.stop(t + len + 0.05);
+  } catch (e) {}
+}
+
+function render() {
+  const s = steps[idx], sec = PLAN[s.sec];
+  const colors = { work: "var(--work)", rest: "var(--rest)", stretch: "var(--stretch)", warm: "var(--warm)" };
+  $("dot").style.background = colors[s.kind];
+  $("phase").textContent = sec.title + (s.round ? " · round " + s.round + " of " + sec.rounds : "");
+  $("name").textContent = s.name;
+  $("cue").textContent = s.cue;
+  if ($("how").dataset.for !== s.name) { $("how").innerHTML = howHTML(s.name); $("how").dataset.for = s.name; }
+  $("time").textContent = fmt(left);
+  $("fill").style.width = (100 * (1 - left / s.secs)) + "%";
+  $("fill").style.background = colors[s.kind];
+  const n = steps[idx + 1];
+  $("next").innerHTML = n ? `Next: <b>${n.name}</b> · ${n.secs}s` : "Last step. Then you're done.";
+  $("go").textContent = running ? "Pause" : (idx === 0 && left === s.secs ? "Start" : "Resume");
+  $("progress").textContent = `${idx + 1} of ${steps.length} steps`;
+  let nowTarget = idx;
+  if (sec.rounds) { const pos = (idx - sec.index) % (sec.steps.length * 2); nowTarget = sec.index + Math.floor(pos / 2) * 2; }
+  document.querySelectorAll(".step").forEach(el => {
+    const t = +el.dataset.target;
+    el.classList.toggle("now", t === nowTarget);
+    el.classList.toggle("done", t < nowTarget);
+  });
+  try { localStorage.setItem(KEY, idx); } catch (e) {}
+}
+
+function loop(ts) {
+  if (!running) return;
+  const dt = (ts - lastTs) / 1000; lastTs = ts;
+  const before = Math.ceil(left);
+  left = Math.max(0, left - dt);
+  const after = Math.ceil(left);
+  if (after !== before && after > 0 && after <= 3) beep(660, 0.1);
+  if (left <= 0) { advance(true); return; }
+  if (after !== before) render(); else $("fill").style.width = (100 * (1 - left / steps[idx].secs)) + "%";
+  tick = requestAnimationFrame(loop);
+}
+function start() {
+  if (running) return;
+  running = true; lastTs = performance.now();
+  try { if (ac && ac.state === "suspended") ac.resume(); } catch (e) {}
+  try { navigator.wakeLock && navigator.wakeLock.request("screen").then(w => wake = w).catch(() => {}); } catch (e) {}
+  render(); tick = requestAnimationFrame(loop);
+}
+function stop() {
+  running = false; cancelAnimationFrame(tick);
+  try { wake && wake.release(); wake = null; } catch (e) {}
+  render();
+}
+function advance(auto) {
+  if (idx >= steps.length - 1) {
+    running = false; cancelAnimationFrame(tick);
+    beep(880, 0.15); beep(1100, 0.15, 0.18); beep(1320, 0.3, 0.36);
+    left = 0; render();
+    $("name").textContent = "Done. 70 minutes in the bank.";
+    $("cue").textContent = "Drink water, eat protein.";
+    $("go").textContent = "Restart";
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    idx = -1; return;
+  }
+  idx++; left = steps[idx].secs;
+  if (auto) { beep(steps[idx].kind === "rest" ? 520 : 880, 0.25); lastTs = performance.now(); render(); tick = requestAnimationFrame(loop); }
+  else render();
+}
+$("go").addEventListener("click", () => {
+  if (idx === -1) { idx = 0; left = steps[0].secs; render(); start(); return; }
+  if (!ac) beep(1, 0.01);
+  running ? stop() : start();
+});
+$("skip").addEventListener("click", () => { if (idx === -1) return; const was = running; stop(); advance(false); if (was) start(); });
+$("prev").addEventListener("click", () => {
+  if (idx === -1) idx = steps.length;
+  const was = running; stop();
+  if (left < steps[idx]?.secs - 2) left = steps[idx].secs; else { idx = Math.max(0, idx - 1); left = steps[idx].secs; }
+  render(); if (was) start();
+});
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && running) { lastTs = performance.now(); } });
+render();
+</script>
+</body>
+</html>
