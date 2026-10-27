@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Burn Circuit 70</title>
+<title>Burn Circuit 45</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
 <style>
 /* Layout: one sticky player on top, scrollable step list below; built for one thumb on a phone */
@@ -80,8 +80,8 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
 <body>
 
 <div class="wrap">
-  <h1>Burn Circuit 70</h1>
-  <p class="sub">Full body, high heart rate, core work last, long stretch at the end. No equipment needed. Tap an exercise to read how to do it, tap its time to jump there.</p>
+  <h1>Burn Circuit 45</h1>
+  <p class="sub">Beginner pace: low impact, 30s on 30s off, two rounds, long stretch at the end. A chair and a table edge are all you need. Tap an exercise to read how to do it, tap its time to jump there.</p>
 
   <section class="player" aria-live="polite">
     <div class="phase"><i class="dot" id="dot"></i><span id="phase">Ready</span></div>
@@ -101,11 +101,18 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
   <div class="meta"><span id="progress">0 of 0 steps</span><span id="total"></span></div>
   <div id="sections"></div>
 
-  <p class="note">Belly fat goes when total body fat goes. This session burns a lot, but the deficit is set in the kitchen. Three or four of these a week plus a modest calorie cut is what actually moves the belt notch.</p>
+  <p class="note">Do this 3 times a week. When two rounds feel easy, change the circuits to 3 rounds (edit the number at the top of the file), then move work to 40s. Belly fat comes off from an overall calorie deficit, so the real lever is eating a bit less. Quitting cigarettes would do more for your cardio than any exercise here.</p>
 </div>
 
 <script>
 const HOW = {
+  "Marching in place":["Stand tall, lift one knee to hip height, then the other.","Swing the opposite arm with each knee.","Pick up the pace as you go."],
+  "Step-back burpees":["Squat down, hands on the floor.","Step the right foot back, then the left, so you're in a plank.","Step both feet back in, stand up tall. No jump, no push-up."],
+  "Squat to chair":["Stand in front of a chair, feet shoulder width.","Push hips back and lower until you lightly touch the seat.","Stand straight back up. Don't sit down fully."],
+  "Incline push-ups":["Hands on a table edge or wall, a bit wider than shoulders.","Walk feet back so the body is a straight line.","Lower chest to the edge, press back up. Higher surface is easier."],
+  "Bird dogs":["Hands and knees, back flat.","Extend the right arm forward and the left leg back at the same time.","Hold 2 seconds, return, switch sides. Hips stay level."],
+  "Glute bridges":["Lie on your back, knees bent, feet flat near the hips.","Push through the heels, lift hips until the body is straight from shoulders to knees.","Squeeze the glutes for 1s at the top, lower slowly."],
+  "Bent-knee leg raises":["Lie on your back, hands under the hips, knees bent at 90.","Lift the knees up over the hips.","Lower the feet slowly until they almost touch the floor. Back stays flat."],
   "Jumping jacks":["Stand feet together, arms at sides.","Jump feet wide while swinging arms overhead.","Jump back. Keep it bouncy, land on the balls of the feet."],
   "Arm circles":["Arms straight out to the sides at shoulder height.","Small circles forward, growing bigger over 15s.","Reverse direction for the second 15s."],
   "Hip circles":["Feet shoulder width, hands on hips.","Push hips in a big circle: left, front, right, back.","Switch direction halfway."],
@@ -116,12 +123,12 @@ const HOW = {
   "High knees":["Run in place.","Drive each knee up to hip height.","Pump the arms, stay on the balls of the feet."],
   "World's greatest stretch":["Step into a long lunge, right foot forward, left hand on the floor.","Drop the right elbow toward the right instep.","Rotate and reach the right arm to the ceiling. 30s, then switch sides."],
   "Burpees":["From standing, squat and put hands on the floor.","Jump feet back to a plank, lower chest to the floor.","Push up, jump feet in, jump straight up with arms overhead."],
-  "Mountain climbers":["Start in a plank, hands under shoulders.","Drive the right knee toward the chest, then switch legs fast.","Hips stay level, don't let them rise."],
+  "Mountain climbers":["Plank, hands under shoulders (or on a bench).","Step the right knee toward the chest, step it back, then the left.","Steady pace, hips level."],
   "Squat jumps":["Squat to parallel.","Explode up, arms swing overhead.","Land soft, straight back into the next squat."],
   "Push-ups":["Plank, hands slightly wider than shoulders.","Lower chest to just above the floor, elbows at 45 degrees from the body.","Press back up. Body stays in one straight line."],
   "Reverse lunges":["Stand tall.","Step one foot back, drop the back knee to just above the floor.","Push through the front heel to stand. Alternate legs."],
-  "Plank shoulder taps":["High plank, feet a bit wider than usual.","Lift the right hand and tap the left shoulder.","Put it down, switch. Hips don't rotate."],
-  "Skaters":["Stand on the right leg.","Jump sideways to the left, land on the left foot, right foot sweeps behind.","Touch the floor with the right hand if you can, jump back."],
+  "Plank shoulder taps":["Plank on your knees, hands under shoulders.","Lift the right hand and tap the left shoulder.","Put it down, switch. Hips don't rotate."],
+  "Skaters":["Stand on the right leg.","Step wide to the left, the right foot sweeps behind.","Reach the right hand down toward the left foot, step back. No jumping."],
   "Bicycle crunches":["Lie on your back, hands lightly behind the head, legs lifted.","Bring the right elbow to the left knee while extending the right leg.","Switch sides slowly. Lower back stays on the floor."],
   "Hip-hinge swings":["Feet wide, hold a weight or clasp hands.","Push hips back, chest forward, weight swings between the legs.","Snap the hips forward to stand, arms float to chest height. Hips do the work, not arms."],
   "Jump rope or high knees":["Rope: small quick hops, wrists turn the rope.","No rope: fast high knees.","Stay light, breathe steady."],
@@ -148,7 +155,7 @@ const HOW = {
   "Figure-four glute stretch":["Lie on your back, cross the right ankle over the left knee.","Pull the left thigh toward the chest.","30s, then switch."],
   "Chest and shoulder stretch":["Stand in a doorway, forearms on the frame, step forward.","Or clasp hands behind the back, lift and open the chest.","Hold, breathe deep."],
 };
-const VID = {"Jumping jacks":"uLVt6u15L98","Arm circles":"hne3nHGXPRM","Hip circles":"qkrJXGVj_OQ","Leg swings":"UN9j_8l3keM","Inchworms":"ml3MdmCkwbQ","Bodyweight squats":"ZLJBfYF_oO0","High knees":"D0GwAezTvtg","World's greatest stretch":"-CiWQ2IvY34","Burpees":"wGvBfVeCNko","Mountain climbers":"hq_0YlyfqGM","Squat jumps":"8Sl9h44XNJA","Push-ups":"WDIpL0pjun0","Reverse lunges":"xrPteyQLGAo","Plank shoulder taps":"mPIym8BigIc","Skaters":"9_jLW6VkU8A","Bicycle crunches":"1we3bh9uhqY","Hip-hinge swings":"sSESeQAir2M","Jump rope or high knees":"7GZ3uEDJqXA","Russian twists":"DF0sPfwys_g","Bear crawl":"Gb2e9edK8a4","Plank":"mwlp75MS6Rg","Side plank":"44ND4bOB-T0","Dead bugs":"bxn9FBrt4-A","Leg raises":"sY2ZgV2Sj_s","Hollow hold":"TNHSgs_orU0","Flutter kicks":"6D23AyECRGQ","Downward dog":"3qHXmRDN-ig","Cobra":"5-04VIORdwM","Child's pose":"eqVMAPM00DM","Cat-cow":"KT6Fk7FWYfM","Hip flexor lunge":"iZ1eZBY4fwM","Pigeon":"zuYbjkuKLKY","Seated hamstring fold":"_Ivm4C53zBQ","Seated twist":"ciGK6HyYqV4","Figure-four glute stretch":"VgjgTGnBkx0","Chest and shoulder stretch":"h4M4XmCBFd8"};
+const VID = {"Marching in place":"QilgMPG7OaA","Squat to chair":"7OpSQbowAmo","Incline push-ups":"j0q5wD9Lcg0","Bird dogs":"LaLKNS7mxrk","Glute bridges":"n6JiF2jp2Ns","Step-back burpees":"ew84D9HO_3I","Bent-knee leg raises":"DopkYMiUVMg","Jumping jacks":"uLVt6u15L98","Arm circles":"hne3nHGXPRM","Hip circles":"qkrJXGVj_OQ","Leg swings":"UN9j_8l3keM","Inchworms":"ml3MdmCkwbQ","Bodyweight squats":"ZLJBfYF_oO0","High knees":"D0GwAezTvtg","World's greatest stretch":"-CiWQ2IvY34","Burpees":"wGvBfVeCNko","Mountain climbers":"hq_0YlyfqGM","Squat jumps":"8Sl9h44XNJA","Push-ups":"WDIpL0pjun0","Reverse lunges":"xrPteyQLGAo","Plank shoulder taps":"Du9gJlpYC9g","Skaters":"ZW1G5aWLqXc","Bicycle crunches":"1we3bh9uhqY","Hip-hinge swings":"sSESeQAir2M","Jump rope or high knees":"7GZ3uEDJqXA","Russian twists":"DF0sPfwys_g","Bear crawl":"Gb2e9edK8a4","Plank":"mwlp75MS6Rg","Side plank":"44ND4bOB-T0","Dead bugs":"bxn9FBrt4-A","Leg raises":"sY2ZgV2Sj_s","Hollow hold":"TNHSgs_orU0","Flutter kicks":"6D23AyECRGQ","Downward dog":"3qHXmRDN-ig","Cobra":"5-04VIORdwM","Child's pose":"eqVMAPM00DM","Cat-cow":"KT6Fk7FWYfM","Hip flexor lunge":"iZ1eZBY4fwM","Pigeon":"zuYbjkuKLKY","Seated hamstring fold":"_Ivm4C53zBQ","Seated twist":"ciGK6HyYqV4","Figure-four glute stretch":"VgjgTGnBkx0","Chest and shoulder stretch":"h4M4XmCBFd8"};
 const vidId = name => VID[name] || VID[name.replace(/, (left|right)$/, "")];
 function videoHTML(name) {
   const id = vidId(name); if (!id) return "";
@@ -165,55 +172,53 @@ function howHTML(name) {
   return `${videoHTML(name)}<ol>${h.map(l => `<li>${l}</li>`).join("")}</ol><a href="${vid(name)}" target="_blank" rel="noopener">More videos</a>`;
 }
 const PLAN = [
-  { title:"Warm-up", kind:"warm", blurb:"Raise temperature, open hips and shoulders. Easy pace.", steps:[
-    ["Jumping jacks",60,"Light on the feet, full arm swing"],
+  { title:"Warm-up", kind:"warm", blurb:"Get warm, nothing more. You should be able to talk the whole time.", steps:[
+    ["Marching in place",60,"Lift knees to hip height, swing the arms"],
     ["Arm circles",30,"15s forward, 15s backward"],
     ["Hip circles",30,"Hands on hips, big slow circles both ways"],
     ["Leg swings, left",30,"Hold a wall, swing front to back"],
     ["Leg swings, right",30,"Same, other leg"],
-    ["Inchworms",60,"Walk hands out to plank, walk feet in, stand"],
-    ["Bodyweight squats",60,"Slow down, fast up, heels flat"],
-    ["High knees",60,"Finish the warm-up with the heart rate up"],
+    ["Bodyweight squats",45,"Half depth is fine today, heels flat"],
+    ["High knees",45,"Easy pace, this is still warm-up"],
     ["World's greatest stretch",60,"Lunge, elbow to instep, rotate and reach. 30s each side"],
   ]},
-  { title:"Circuit A", kind:"work", rounds:3, work:40, rest:20, roundRest:90,
-    blurb:"3 rounds. 40s work, 20s rest, 90s between rounds. Push hard on work, breathe on rest.", steps:[
-    ["Burpees","Chest to floor, jump at the top. Step back instead of jumping if form breaks"],
-    ["Mountain climbers","Hips level with shoulders, drive knees fast"],
-    ["Squat jumps","Land soft, sink into the squat, explode up"],
-    ["Push-ups","Elbows at 45 degrees, body in one line. Knees down if needed"],
-    ["Reverse lunges","Alternate legs, back knee kisses the floor"],
-    ["Plank shoulder taps","Feet wide, hips still, tap opposite shoulder"],
+  { title:"Circuit A", kind:"work", rounds:2, work:30, rest:30, roundRest:90,
+    blurb:"2 rounds. 30s work, 30s rest, 90s between rounds. Steady effort, no jumping. If you can't talk in a short sentence, slow down.", steps:[
+    ["Step-back burpees","Hands down, step one foot back then the other, step in, stand. No jump, no push-up"],
+    ["Mountain climbers","Slow: step each knee in, don't jump them. Hands on a bench or stairs if the floor is hard"],
+    ["Squat to chair","Sit back until you lightly touch the chair, stand. Don't flop down"],
+    ["Incline push-ups","Hands on a table, counter or wall. Body straight, chest to the edge"],
+    ["Reverse lunges","Hold a chair for balance, short step back, half depth"],
+    ["Plank shoulder taps","On your knees. Hips still"],
   ]},
-  { title:"Circuit B", kind:"work", rounds:3, work:40, rest:20, roundRest:90,
-    blurb:"3 rounds, same timing. More rotation and lateral work this time.", steps:[
-    ["Skaters","Side to side bound, touch the floor behind the planted foot"],
-    ["Bicycle crunches","Slow and controlled, elbow to opposite knee, lower back pressed down"],
-    ["Hip-hinge swings","Kettlebell or dumbbell if you have one, otherwise hinge and snap hips with hands clasped"],
-    ["Jump rope or high knees","Real rope if available, fast feet either way"],
-    ["Russian twists","Feet off the floor if you can, rotate the ribcage not the arms"],
-    ["Bear crawl","Knees an inch off the floor, crawl forward 4 steps, back 4 steps"],
+  { title:"Circuit B", kind:"work", rounds:2, work:30, rest:30, roundRest:90,
+    blurb:"2 rounds, same timing. Rotation and glutes.", steps:[
+    ["Skaters","Step side to side, no jump, reach down toward the planted foot"],
+    ["Bicycle crunches","Slow, elbow toward opposite knee, lower back pressed down"],
+    ["Hip-hinge swings","No weight. Hinge, hands between the knees, snap the hips to stand"],
+    ["Marching in place","Fast march, high knees, pump the arms"],
+    ["Russian twists","Feet on the floor, rotate the chest side to side"],
+    ["Bird dogs","Hands and knees. Opposite arm and leg out, hold 2s, switch"],
   ]},
-  { title:"Core finisher", kind:"work", blurb:"Straight through, no rest except what's listed. Quality over speed.", steps:[
-    ["Plank",60,"Squeeze glutes, push the floor away"],
-    ["Side plank, left",30,"Hips high, top arm up"],
-    ["Side plank, right",30,"Same, other side"],
-    ["Dead bugs",60,"Opposite arm and leg, lower back glued to the floor"],
-    ["Rest",30,"Shake out",{kind:"rest"}],
-    ["Leg raises",45,"Hands under hips if needed, don't let the lower back arch"],
-    ["Hollow hold",30,"Shoulders and feet off the floor, lower back down"],
-    ["Flutter kicks",45,"Small fast kicks, chin tucked"],
+  { title:"Core finisher", kind:"work", blurb:"Short and clean. Stop any hold early if the lower back complains.", steps:[
+    ["Plank",30,"Forearms, knees down if needed. Squeeze glutes"],
+    ["Side plank, left",20,"On the knee, hips up"],
+    ["Side plank, right",20,"Same, other side"],
+    ["Dead bugs",45,"Opposite arm and leg, slow, lower back on the floor"],
+    ["Rest",30,"Breathe",{kind:"rest"}],
+    ["Glute bridges",45,"Squeeze at the top for 1s"],
+    ["Bent-knee leg raises",30,"Hands under hips, knees bent, lift and lower slowly"],
   ]},
   { title:"Cool-down stretches", kind:"stretch", blurb:"Breathe slow through the nose. Hold, don't bounce.", steps:[
-    ["Downward dog",60,"Pedal the heels for the first 20s, then hold"],
+    ["Downward dog",45,"Bend the knees as much as you need"],
     ["Cobra",45,"Hips on the floor, chest open, elbows soft"],
     ["Child's pose",60,"Knees wide, arms long, forehead down"],
     ["Cat-cow",60,"Move with the breath, slow"],
     ["Hip flexor lunge, left",45,"Back knee down, tuck the pelvis, reach the same-side arm up"],
     ["Hip flexor lunge, right",45,"Same, other side"],
-    ["Pigeon, left",60,"Shin forward, fold over the front leg"],
-    ["Pigeon, right",60,"Same, other side"],
-    ["Seated hamstring fold",60,"Legs straight, hinge from the hips, reach for the feet"],
+    ["Pigeon, left",45,"Shin forward, lean over the front leg. Pillow under the hip if tight"],
+    ["Pigeon, right",45,"Same, other side"],
+    ["Seated hamstring fold",60,"Legs straight, hinge from the hips, reach toward the feet"],
     ["Seated twist, left",30,"One hand behind, elbow outside the knee"],
     ["Seated twist, right",30,"Same, other side"],
     ["Figure-four glute stretch",60,"On your back, 30s each side"],
@@ -243,7 +248,7 @@ const totalSecs = steps.reduce((a, s) => a + s.secs, 0);
 
 const $ = id => document.getElementById(id);
 const fmt = s => Math.floor(s / 60) + ":" + String(Math.round(s) % 60).padStart(2, "0");
-const KEY = "burn70.pos";
+const KEY = "burn45.pos";
 let idx = 0, left = steps[0].secs, running = false, tick = null, lastTs = 0, wake = null;
 try { const p = parseInt(localStorage.getItem(KEY)); if (p > 0 && p < steps.length) { idx = p; left = steps[idx].secs; } } catch (e) {}
 
@@ -349,7 +354,7 @@ function advance(auto) {
     running = false; cancelAnimationFrame(tick);
     beep(880, 0.15); beep(1100, 0.15, 0.18); beep(1320, 0.3, 0.36);
     left = 0; render();
-    $("name").textContent = "Done. 70 minutes in the bank.";
+    $("name").textContent = "Done. That counts.";
     $("cue").textContent = "Drink water, eat protein.";
     $("go").textContent = "Restart";
     try { localStorage.removeItem(KEY); } catch (e) {}
