@@ -21,11 +21,11 @@
   --accent:#ff6a2b; --accent-fg:#16110d; --work:#ff6a2b; --rest:#4fc3bf; --stretch:#9d8cff; --warm:#e0b24a; color-scheme:dark }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
 h1{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:.01em;margin:4px 0 2px;text-transform:uppercase;text-wrap:balance}
 .sub{color:var(--mute);font-size:.95rem;margin:0 0 14px}
-.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px 14px 12px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.player{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px 14px 12px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
 .phase{display:flex;align-items:center;gap:8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mute);font-weight:600}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
 .name{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.05;margin:4px 0 0;text-wrap:balance}
@@ -56,6 +56,12 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
 .step.done{opacity:.5}
 .step.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .rounds{font-size:.8rem;color:var(--mute);margin-top:6px}
+.mini{position:fixed;top:0;left:0;right:0;z-index:20;display:none;grid-template-columns:auto 1fr auto auto auto;gap:8px;align-items:center;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.mini.on{display:grid}
+.mini .mt{font-family:var(--display);font-weight:800;font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums;min-width:4ch}
+.mini .mn{font-size:.85rem;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini button{padding:8px 12px;font-size:.9rem}
+.mini button.go{font-size:1rem;padding:8px 14px}
 .how{margin:14px 0 0;font-size:.9rem;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
 .how:empty{display:none}
 .how ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:2px}
@@ -80,6 +86,7 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
 </head>
 <body>
 
+<div class="mini" id="mini"><div class="mt" id="mtime">0:00</div><div class="mn" id="mname"></div><button id="mprev">Back</button><button id="mgo" class="go">Start</button><button id="mskip">Skip</button></div>
 <div class="wrap">
   <h1>Burn Circuit 45</h1>
   <p class="sub">Beginner pace: low impact, 30s on 30s off, two rounds, long stretch at the end. A chair and a table edge are all you need. Tap an exercise to read how to do it, tap its time to jump there.</p>
@@ -311,12 +318,12 @@ function render() {
   $("name").textContent = s.name;
   $("cue").textContent = s.cue;
   if ($("how").dataset.for !== s.name) { $("how").innerHTML = howHTML(s.name); $("how").dataset.for = s.name; }
-  $("time").textContent = fmt(left);
+  $("time").textContent = fmt(left); $("mtime").textContent = fmt(left); $("mname").textContent = s.name;
   $("fill").style.width = (100 * (1 - left / s.secs)) + "%";
   $("fill").style.background = colors[s.kind];
   const n = steps[idx + 1];
   $("next").innerHTML = n ? `Next: <b>${n.name}</b> · ${n.secs}s` : "Last step. Then you're done.";
-  $("go").textContent = running ? "Pause" : (idx === 0 && left === s.secs ? "Start" : "Resume");
+  $("go").textContent = $("mgo").textContent = running ? "Pause" : (idx === 0 && left === s.secs ? "Start" : "Resume");
   $("progress").textContent = `${idx + 1} of ${steps.length} steps`;
   let nowTarget = idx;
   if (sec.rounds) { const pos = (idx - sec.index) % (sec.steps.length * 2); nowTarget = sec.index + Math.floor(pos / 2) * 2; }
@@ -358,7 +365,7 @@ function advance(auto) {
     left = 0; render();
     $("name").textContent = "Done. That counts.";
     $("cue").textContent = "Drink water, eat protein.";
-    $("go").textContent = "Restart";
+    $("go").textContent = $("mgo").textContent = "Restart";
     try { localStorage.removeItem(KEY); } catch (e) {}
     idx = -1; return;
   }
@@ -379,6 +386,12 @@ $("prev").addEventListener("click", () => {
   render(); if (was) start();
 });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && running) { lastTs = performance.now(); } });
+$("mgo").addEventListener("click", () => $("go").click());
+$("mskip").addEventListener("click", () => $("skip").click());
+$("mprev").addEventListener("click", () => $("prev").click());
+const playerEl = document.querySelector(".player");
+function miniCheck() { $("mini").classList.toggle("on", playerEl.getBoundingClientRect().bottom < 0); }
+window.addEventListener("scroll", miniCheck, { passive: true }); miniCheck();
 render();
 </script>
 </body>
