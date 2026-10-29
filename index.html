@@ -25,18 +25,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
 h1{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:.01em;margin:4px 0 2px;text-transform:uppercase;text-wrap:balance}
 .sub{color:var(--mute);font-size:.95rem;margin:0 0 14px}
-.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px 14px 12px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
 .phase{display:flex;align-items:center;gap:8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mute);font-weight:600}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.name{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.05;margin:6px 0 2px;text-wrap:balance}
+.name{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.05;margin:4px 0 0;text-wrap:balance}
 .cue{color:var(--mute);font-size:.92rem;min-height:1.3em}
-.time{font-family:var(--display);font-weight:800;font-size:5.2rem;line-height:1;font-variant-numeric:tabular-nums;margin:8px 0 6px;letter-spacing:.02em}
+.time{font-family:var(--display);font-weight:800;font-size:4rem;line-height:1;font-variant-numeric:tabular-nums;margin:4px 0 4px;letter-spacing:.02em}
 .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s linear}
-.ctrl{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px;margin-top:14px}
-button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:14px 10px;cursor:pointer;touch-action:manipulation}
+.ctrl{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;margin-top:8px}
+button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:12px;padding:10px 8px;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-family:var(--display);font-size:1.4rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-family:var(--display);font-size:1.2rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
 .next{margin-top:10px;font-size:.88rem;color:var(--mute)}
 .next b{color:var(--fg);font-weight:600}
 .meta{display:flex;justify-content:space-between;margin:14px 2px 6px;font-size:.85rem;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -56,7 +56,8 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
 .step.done{opacity:.5}
 .step.now{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .rounds{font-size:.8rem;color:var(--mute);margin-top:6px}
-.how{margin:8px 0 0;font-size:.9rem}
+.how{margin:14px 0 0;font-size:.9rem;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.how:empty{display:none}
 .how ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:2px}
 .how a{color:var(--accent);font-weight:600;text-decoration:none;display:inline-block;margin-top:6px}
 .step{grid-template-columns:4px 1fr auto;grid-template-areas:"r t d" "r h h"}
@@ -71,9 +72,9 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
 .vid i{position:absolute;left:50%;top:50%;width:56px;height:40px;margin:-20px 0 0 -28px;background:var(--accent);border-radius:10px}
 .vid i::after{content:"";position:absolute;left:22px;top:11px;border-left:16px solid var(--accent-fg);border-top:9px solid transparent;border-bottom:9px solid transparent}
 .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.player .vid{max-width:360px;margin-left:auto;margin-right:auto}
+.how .vid{max-width:420px;margin-left:auto;margin-right:auto}
 .note{margin-top:26px;padding:12px 14px;border-left:3px solid var(--accent);color:var(--mute);font-size:.9rem}
-@media (max-width:420px){.time{font-size:4.4rem}.name{font-size:1.7rem}}
+@media (max-width:420px){.time{font-size:3.4rem}.name{font-size:1.4rem}}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
 </head>
@@ -87,7 +88,6 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
     <div class="phase"><i class="dot" id="dot"></i><span id="phase">Ready</span></div>
     <div class="name" id="name">Warm-up starts with jumping jacks</div>
     <div class="cue" id="cue">Press start when you're on the mat.</div>
-    <div class="how" id="how"></div>
     <div class="time" id="time">0:00</div>
     <div class="bar"><i id="fill"></i></div>
     <div class="ctrl">
@@ -97,6 +97,8 @@ button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--acc
     </div>
     <div class="next" id="next"></div>
   </section>
+
+  <div class="how" id="how"></div>
 
   <div class="meta"><span id="progress">0 of 0 steps</span><span id="total"></span></div>
   <div id="sections"></div>
